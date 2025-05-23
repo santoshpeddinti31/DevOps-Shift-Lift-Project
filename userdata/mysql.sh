@@ -3,8 +3,22 @@ DATABASE_PASS='admin123'
 sudo yum update -y
 sudo yum install epel-release -y
 sudo yum install git zip unzip -y
-sudo yum install mariadb-server -y
 
+sudo tee /etc/yum.repos.d/MariaDB.repo <<EOF
+[mariadb]
+name = MariaDB
+baseurl = https://rpm.mariadb.org/10.6/rhel9-amd64
+gpgkey=https://rpm.mariadb.org/RPM-GPG-KEY-MariaDB
+gpgcheck=1
+EOF
+
+# Clean and update metadata: 
+sudo dnf clean all
+sudo dnf makecache
+
+
+# install mariadb:
+sudo dnf install MariaDB-server -y
 
 # starting & enabling mariadb-server
 sudo systemctl start mariadb
@@ -31,7 +45,4 @@ sudo systemctl restart mariadb
 #starting the firewall and allowing the mariadb to access from port no. 3306
 sudo systemctl start firewalld
 sudo systemctl enable firewalld
-sudo firewall-cmd --get-active-zones
-sudo firewall-cmd --zone=public --add-port=3306/tcp --permanent
-sudo firewall-cmd --reload
 sudo systemctl restart mariadb

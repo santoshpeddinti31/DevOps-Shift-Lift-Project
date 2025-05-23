@@ -1,6 +1,7 @@
 TOMURL="https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.37/bin/apache-tomcat-8.5.37.tar.gz"
-yum install java-1.8.0-openjdk -y
-yum install git maven wget -y
+sudo apt update
+sudo apt install openjdk-8-jdk -y
+sudo apt install git maven wget -y
 cd /tmp/
 wget $TOMURL -O tomcatbin.tar.gz
 EXTOUT=`tar xzvf tomcatbin.tar.gz`
@@ -19,13 +20,14 @@ After=network.target
 [Service]
 User=tomcat
 WorkingDirectory=/usr/local/tomcat8
-Environment=JRE_HOME=/usr/lib/jvm/jre
-Environment=JAVA_HOME=/usr/lib/jvm/jre
+Environment=JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+Environment=JRE_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
 Environment=CATALINA_HOME=/usr/local/tomcat8
-Environment=CATALINE_BASE=/usr/local/tomcat8
+Environment=CATALINA_BASE=/usr/local/tomcat8
 ExecStart=/usr/local/tomcat8/bin/catalina.sh run
 ExecStop=/usr/local/tomcat8/bin/shutdown.sh
-SyslogIdentifier=tomcat-%i
+SuccessExitStatus=143
+SyslogIdentifier=tomcat
 
 [Install]
 WantedBy=multi-user.target
@@ -44,5 +46,5 @@ rm -rf /usr/local/tomcat8/webapps/ROOT*
 cp target/vprofile-v2.war /usr/local/tomcat8/webapps/ROOT.war
 systemctl start tomcat
 sleep 300
-cp /vprofile-vm-data/application.properties /usr/local/tomcat8/webapps/ROOT/WEB-INF/classes/application.properties
-systemctl restart tomcat8
+cp /tmp/vprofile-repo/target/vprofile-v2/WEB-INF/classes/application.properties /usr/local/tomcat8/webapps/ROOT/WEB-INF/classes/application.properties
+systemctl restart tomcat
